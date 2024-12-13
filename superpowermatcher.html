@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SuperPower Matcher</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+</head>
+<body>
+    <div id="navbarplaceh"></div>
+  <div id="app">
+    <div class="container mt-5">
+      <h1>SuperPower Matcher</h1>
+      <form @submit.prevent="filterSuperheroes">
+        <div class="slider-container">
+          <label for="intelligence">Intelligence (0-100):</label>
+          <input type="range" id="intelligence" v-model="filters.intelligence" class="slider" min="0" max="100">
+          <span>{{ filters.intelligence }}</span>
+        </div>
+        <div class="slider-container">
+          <label for="strength">Force (0-100):</label>
+          <input type="range" id="strength" v-model="filters.strength" class="slider" min="0" max="100">
+          <span>{{ filters.strength }}</span>
+        </div>
+        <div class="slider-container">
+          <label for="speed">Vitesse (0-100):</label>
+          <input type="range" id="speed" v-model="filters.speed" class="slider" min="0" max="100">
+          <span>{{ filters.speed }}</span>
+        </div>
+        <div class="slider-container">
+          <label for="durability">Durabilité (0-100):</label>
+          <input type="range" id="durability" v-model="filters.durability" class="slider" min="0" max="100">
+          <span>{{ filters.durability }}</span>
+        </div>
+        <div class="slider-container">
+          <label for="power">Puissance (0-100):</label>
+          <input type="range" id="power" v-model="filters.power" class="slider" min="0" max="100">
+          <span>{{ filters.power }}</span>
+        </div>
+        <div class="slider-container">
+          <label for="combat">Combat (0-100):</label>
+          <input type="range" id="combat" v-model="filters.combat" class="slider" min="0" max="100">
+          <span>{{ filters.combat }}</span>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Filtrer les super-héros</button>
+      </form>
+
+      <div v-if="filteredSuperheroes.length">
+        <h3 class="mt-5">Super-héros correspondants :</h3>
+        <ul class="list-group">
+          <li v-for="superhero in filteredSuperheroes" :key="superhero.id" class="list-group-item">
+            <h5>{{ superhero.name }}</h5>
+            <p>Intelligence: {{ superhero.powerstats.intelligence }}</p>
+            <p>Force: {{ superhero.powerstats.strength }}</p>
+            <p>Vitesse: {{ superhero.powerstats.speed }}</p>
+            <p>Durabilité: {{ superhero.powerstats.durability }}</p>
+            <p>Puissance: {{ superhero.powerstats.power }}</p>
+            <p>Combat: {{ superhero.powerstats.combat }}</p>
+          </li>
+        </ul>
+      </div>
+      <div v-else>
+        <p>Aucun super-héros trouvé avec ces critères.</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  <script src="https://unpkg.com/axios@latest"></script>
+  <script>
+    new Vue({
+      el: '#app',
+      data: {
+        superheroes: [],
+        filters: {
+          intelligence: 0,
+          strength: 0,
+          speed: 0,
+          durability: 0,
+          power: 0,
+          combat: 0,
+        },
+        filteredSuperheroes: [],
+      },
+      mounted() {
+        axios.get('https://cdn.jsdelivr.net/gh/rtomczak/superhero-api@0.3.0/api/all.json')
+          .then(response => {
+            this.superheroes = response.data;
+            this.filteredSuperheroes = this.superheroes; // Initialiser avec tous les super-héros
+          })
+          .catch(error => {
+            console.error("Erreur lors de la récupération des super-héros :", error);
+          });
+      },
+      methods: {
+        filterSuperheroes() {
+          this.filteredSuperheroes = this.superheroes.filter(superhero => {
+            return (
+              superhero.powerstats.intelligence >= this.filters.intelligence &&
+              superhero.powerstats.strength >= this.filters.strength &&
+              superhero.powerstats.speed >= this.filters.speed &&
+              superhero.powerstats.durability >= this.filters.durability &&
+              superhero.powerstats.power >= this.filters.power &&
+              superhero.powerstats.combat >= this.filters.combat
+            );
+          });
+        },
+      },
+    });
+    fetch('navbar.html')
+        .then(response => response.text())
+        .then(data => {
+        document.getElementById('navbarplaceh').innerHTML = data;
+        }).catch(error => console.log("Erreur de chargement de la navbar :", error));
+  </script>
+</body>
+</html>

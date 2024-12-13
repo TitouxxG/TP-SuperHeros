@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Détails du Super-héros</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="navbarplaceh"></div>
+    <div id="app">
+        <div class="container mt-5">
+          <h1>Détails du Super-héros</h1>
+          <div v-if="superhero" class="d-flex align-items-center">
+            <img :src="superhero.images.lg"  alt="Image de {{ superhero.name }}" width="500" >
+            <div class="ms-4">
+              <h2>{{ superhero.name }}</h2>
+              <p><strong>Apparence :</strong> {{ superhero.appearance.race }} - {{ superhero.appearance.gender }}</p>
+              <p><strong>Biographie :</strong> {{ superhero.biography.fullName }} (Alias: {{ superhero.biography.aliases.join(', ') }})</p>
+              <p><strong>Occupation :</strong> {{ superhero.biography.occupation }}</p>
+              <p><strong>Affiliation :</strong> {{ superhero.biography.affiliation }}</p>
+              <h3>Pouvoirs</h3>
+              <ul>
+                <li>Intelligence: {{ superhero.powerstats.intelligence }}</li>
+                <li>Force: {{ superhero.powerstats.strength }}</li>
+                <li>Vitesse: {{ superhero.powerstats.speed }}</li>
+                <li>Durabilité: {{ superhero.powerstats.durability }}</li>
+                <li>Puissance: {{ superhero.powerstats.power }}</li>
+                <li>Combat: {{ superhero.powerstats.combat }}</li>
+              </ul>
+            </div>
+          </div>
+          <p v-else>Chargement des informations...</p>
+        </div>
+      </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  <script src="https://unpkg.com/axios@latest"></script>
+  <script>
+    new Vue({
+      el: '#app',
+      data: {
+        superhero: null,
+      },
+      mounted() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+
+        if (id) {
+          axios.get(`https://cdn.jsdelivr.net/gh/rtomczak/superhero-api@0.3.0/api/id/${id}.json`)
+            .then(response => {
+              this.superhero = response.data;
+            })
+            .catch(error => {
+              console.error('Erreur lors de la récupération des détails du super-héros:', error);
+            });
+        }
+      }
+    });
+    fetch('navbar.html')
+        .then(response => response.text())
+        .then(data => {
+        document.getElementById('navbarplaceh').innerHTML = data;
+        }).catch(error => console.log("Erreur de chargement de la navbar :", error));
+  </script>
+</body>
+</html>
